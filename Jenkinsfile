@@ -70,12 +70,11 @@ pipeline {
             }
         }
 
-        stage('Run Selenium Tests') {
+       stage('Run Selenium Tests') {
             steps {
                 echo '🧪 Running Selenium tests...'
                 sh '''
-                    docker run --rm -v ${WORKSPACE}/part1-tests:/tests --network host selenium/standalone-chrome \
-                        bash -c "pip install pytest && pytest /tests/tests --junitxml=/tests/results.xml -v"
+                    docker run --rm -v ${WORKSPACE}/part1-tests:/tests --network host part1-tests-image
                 '''
             }
         }
