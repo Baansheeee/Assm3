@@ -26,7 +26,7 @@ def driver():
 @pytest.fixture
 def base_url():
     """Base URL of the application"""
-    return "http://localhost:5173"
+    return "http://13.127.156.48/:8085"
 
 # ======================== TEST WRAPPER ========================
 test_results = []
