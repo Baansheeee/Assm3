@@ -26,4 +26,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 COPY . .
-CMD ["pytest", "tests", "--junitxml=/tests/results.xml", "-v"
+CMD ["pytest", "tests", "--junitxml=/tests/results.xml", "-v"]
