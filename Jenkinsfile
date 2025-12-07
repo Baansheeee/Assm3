@@ -74,7 +74,7 @@ pipeline {
             steps {
                 echo '🧪 Running Selenium tests...'
                 sh '''
-                    docker run --rm -v ${WORKSPACE}/part1-tests:/tests --network host part1-tests-image
+                    docker run --rm -v ${WORKSPACE}/part1-tests:/tests --network host part1-tests-image || exit 1
                 '''
             }
         }
