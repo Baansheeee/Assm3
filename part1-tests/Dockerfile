@@ -1,22 +1,29 @@
-# part1-tests/Dockerfile
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-# Install dependencies for Chrome + Selenium
-RUN apt-get update && \
-    apt-get install -y wget unzip xvfb libxi6 default-jdk && \
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt install -y ./google-chrome-stable_current_amd64.deb && \
-    rm google-chrome-stable_current_amd64.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages
-RUN pip install --no-cache-dir pytest selenium
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    curl \
+    xvfb \
+    gnupg2 \
+    ca-certificates \
+    --no-install-recommends \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /tests
 
-# Copy test code into container
-COPY . /tests
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update && apt-get install -y google-chrome-stable \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Default command (optional)
-CMD ["pytest", "tests", "--junitxml=/tests/results.xml", "-v"]
+
+WORKDIR /app
+
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+COPY . .
+CMD ["pytest", "tests", "--junitxml=/tests/results.xml", "-v"
