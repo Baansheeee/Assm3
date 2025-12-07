@@ -1,20 +1,30 @@
 services:
-  frontend:
-    build: ./my-project
-    ports:
-      - "80:80"
-    environment:
-      - REACT_APP_API_URL=http://15.206.163.217:3000
-    depends_on:
-      - backend
-    restart: always
-
   backend:
-    build: ./server
+    image: node:20
+    container_name: backend_ci
+    working_dir: /app
+    volumes:
+      - ./server:/app
     ports:
-      - "3000:3000"
+      - "4000:3000"  # Host 4000 → Container 3000
     environment:
       - PORT=3000
       - JWT_SECRETKEY=chintapaktamtam
       - MONGO_URI=mongodb+srv://ecommerce:ecommerce123@ecommerce.85s1apq.mongodb.net/?retryWrites=true&w=majority&appName=ecommerce
+    command: sh -c "npm install && npm start"
+    restart: always
+
+  frontend:
+    image: node:20
+    container_name: frontend_ci
+    working_dir: /app
+    volumes:
+      - ./my-project:/app
+    ports:
+      - "8085:5173"  # Host 8085 → Container 5173 (Vite dev server)
+    environment:
+      - VITE_API=${VITE_API}   # Use backend container name for internal Docker network
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
     restart: always
