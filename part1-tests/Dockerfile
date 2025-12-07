@@ -1,6 +1,5 @@
 FROM python:3.12-slim
 
-
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -11,19 +10,20 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
+# Install Chrome
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update && apt-get install -y google-chrome-stable \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /tests
 
-WORKDIR /app
-
-
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-
+# Copy tests
 COPY . .
-CMD ["pytest", "tests", "--junitxml=/tests/results.xml", "-v"]
+
+# Fixed CMD with proper path
+CMD ["pytest", "/tests/tests", "--junitxml=/tests/results.xml", "-v"]
